@@ -14,7 +14,11 @@ import {
   APP_SESSION_CACHE_KEY,
   MULTIPLE_TABS_KEY,
   TABLE_SETTING_KEY,
+  AUTH_KEY,
+  ABP_LOCALE_KEY,
+  ABP_TETANT_KEY,
 } from '@/enums/cacheEnum';
+import { ApplicationAuthConfigurationDto } from '@/services/ServiceProxies';
 import { DEFAULT_CACHE_TIME } from '@/settings/encryptionSetting';
 import { toRaw } from 'vue';
 import { pick, omit } from 'lodash-es';
@@ -27,6 +31,9 @@ interface BasicStore {
   [PROJ_CFG_KEY]: ProjectConfig;
   [MULTIPLE_TABS_KEY]: RouteLocationNormalized[];
   [TABLE_SETTING_KEY]: Partial<TableSetting>;
+  [AUTH_KEY]: ApplicationAuthConfigurationDto;
+  [ABP_LOCALE_KEY]: string;
+  [ABP_TETANT_KEY]: string;
 }
 
 type LocalStore = BasicStore;

@@ -4,10 +4,16 @@ import { defineStore } from 'pinia';
 import { store } from '@/store';
 import { RoleEnum } from '@/enums/roleEnum';
 import { PageEnum } from '@/enums/pageEnum';
-import { ROLES_KEY, TOKEN_KEY, USER_INFO_KEY } from '@/enums/cacheEnum';
+import {
+  ROLES_KEY,
+  TOKEN_KEY,
+  USER_INFO_KEY,
+  ABP_LOCALE_KEY,
+  ABP_TETANT_KEY,
+} from '@/enums/cacheEnum';
 import { getAuthCache, setAuthCache } from '@/utils/auth';
 import { GetUserInfoModel, LoginParams } from '@/api/sys/model/userModel';
-import { doLogout, getUserInfo, loginApi } from '@/api/sys/user';
+import { doLogout, getUserInfo, login, getAbpApplicationConfiguration } from '@/api/sys/user';
 import { useI18n } from '@/hooks/web/useI18n';
 import { useMessage } from '@/hooks/web/useMessage';
 import { router } from '@/router';
@@ -16,13 +22,18 @@ import { RouteRecordRaw } from 'vue-router';
 import { PAGE_NOT_FOUND_ROUTE } from '@/router/routes/basic';
 import { isArray } from '@/utils/is';
 import { h } from 'vue';
+import { jwtDecode } from 'jwt-decode';
+import { LoginInput } from '@/services/ServiceProxies';
 
 interface UserState {
   userInfo: Nullable<UserInfo>;
   token?: string;
+  id_token?: string;
   roleList: RoleEnum[];
   sessionTimeout?: boolean;
   lastUpdateTime: number;
+  language: string;
+  tenantId: string;
 }
 
 export const useUserStore = defineStore({
@@ -32,12 +43,15 @@ export const useUserStore = defineStore({
     userInfo: null,
     // token
     token: undefined,
+    id_token: undefined,
     // roleList
     roleList: [],
     // Whether the login expired
     sessionTimeout: false,
     // Last fetch time
     lastUpdateTime: 0,
+    language: '',
+    tenantId: '',
   }),
   getters: {
     getUserInfo(state): UserInfo {
@@ -54,6 +68,29 @@ export const useUserStore = defineStore({
     },
     getLastUpdateTime(state): number {
       return state.lastUpdateTime;
+    },
+    getLanguage(): string {
+      return this.language || getAuthCache<string>(ABP_LOCALE_KEY);
+    },
+    getTenant(): string {
+      return this.tenantId || getAuthCache<string>(ABP_TETANT_KEY);
+    },
+    checkUserLoginExpire(): boolean {
+      try {
+        const userStore = useUserStoreWithOut();
+        const token = userStore.getToken;
+        if (!token) return true;
+        const decoded: any = jwtDecode(token);
+        // 获取当前时间戳
+        const currentTimeStamp = new Date().getTime() / 1000;
+        if (currentTimeStamp >= decoded.exp) {
+          return true;
+        } else {
+          return false;
+        }
+      } catch (error) {
+        return true;
+      }
     },
   },
   actions: {
@@ -87,19 +124,44 @@ export const useUserStore = defineStore({
         goHome?: boolean;
         mode?: ErrorMessageMode;
       },
-    ): Promise<GetUserInfoModel | null> {
+    ) {
       try {
-        const { goHome = true, mode, ...loginParams } = params;
-        const data = await loginApi(loginParams, mode);
-        const { token } = data;
+        const { goHome = true } = params;
+        const request = new LoginInput();
+        request.name = params.username;
+        request.password = params.password;
+        const data = await login(request);
+        this.setToken(data.token as string);
+        this.setUserInfo({
+          userId: data.id as string,
+          username: data.userName as string,
+          realName: data.name as string,
+          roles: data.roles as [],
+          avatar: '',
+          isSts: false,
+          idToken: '',
+        });
 
-        // save token
-        this.setToken(token);
-        return this.afterLoginAction(goHome);
+        await this.getAbpApplicationConfigurationAsync();
+        goHome && (await router.replace(PageEnum.BASE_HOME));
+        return null;
       } catch (error) {
-        return Promise.reject(error);
+        router.replace(PageEnum.BASE_LOGIN);
+        return null;
       }
     },
+    async getAbpApplicationConfigurationAsync() {
+      const application = await getAbpApplicationConfiguration();
+      const permissionStore = usePermissionStore();
+
+      const grantPolicy = Object.keys(application.auth?.grantedPolicies as object);
+      if (grantPolicy.length == 0) {
+        router.replace(PageEnum.BASE_LOGIN);
+        return;
+      }
+      permissionStore.setPermCodeList(grantPolicy);
+    },
+
     async afterLoginAction(goHome?: boolean): Promise<GetUserInfoModel | null> {
       if (!this.getToken) return null;
       // get user info
@@ -125,6 +187,7 @@ export const useUserStore = defineStore({
       }
       return userInfo;
     },
+
     async getUserInfoAction(): Promise<UserInfo | null> {
       if (!this.getToken) return null;
       const userInfo = await getUserInfo();

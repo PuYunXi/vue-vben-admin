@@ -82,7 +82,7 @@
   </Form>
 </template>
 <script lang="ts" setup>
-  import { reactive, ref, unref, computed } from 'vue';
+  import { reactive, ref, unref, computed, toRaw } from 'vue';
 
   import { Checkbox, Form, Input, Row, Col, Button, Divider } from 'ant-design-vue';
   import {
@@ -119,8 +119,8 @@
   const rememberMe = ref(false);
 
   const formData = reactive({
-    account: 'vben',
-    password: '123456',
+    account: 'admin',
+    password: '1q2w3E*',
   });
 
   const { validForm } = useFormValid(formRef);
@@ -134,11 +134,14 @@
     if (!data) return;
     try {
       loading.value = true;
-      const userInfo = await userStore.login({
-        password: data.password,
-        username: data.account,
-        mode: 'none', //不要默认的错误提示
-      });
+      const userInfo = await userStore.login(
+        toRaw({
+          password: data.password,
+          username: data.account,
+          tenantId: '',
+          mode: 'none', //不要默认的错误提示
+        }),
+      );
       if (userInfo) {
         notification.success({
           message: t('sys.login.loginSuccessTitle'),

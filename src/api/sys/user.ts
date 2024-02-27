@@ -3,12 +3,33 @@ import { LoginParams, LoginResultModel, GetUserInfoModel } from './model/userMod
 
 import { ErrorMessageMode } from '#/axios';
 
+import {
+  AccountServiceProxy,
+  LoginOutput,
+  LoginInput,
+  AbpApplicationConfigurationServiceProxy,
+} from '@/services/ServiceProxies';
+
 enum Api {
   Login = '/login',
   Logout = '/logout',
   GetUserInfo = '/getUserInfo',
   GetPermCode = '/getPermCode',
   TestRetry = '/testRetry',
+}
+
+export function login(input: LoginInput): Promise<LoginOutput> {
+  const _loginServiceProxy = new AccountServiceProxy();
+  return _loginServiceProxy.login(input);
+}
+
+/**
+ * 获取应用程序配置
+ * @returns
+ */
+export function getAbpApplicationConfiguration() {
+  const _abpApplicationConfigurationServiceProxy = new AbpApplicationConfigurationServiceProxy();
+  return _abpApplicationConfigurationServiceProxy.applicationConfiguration();
 }
 
 /**
