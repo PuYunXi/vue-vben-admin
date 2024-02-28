@@ -19,15 +19,17 @@ import { ERROR_LOG_ROUTE, PAGE_NOT_FOUND_ROUTE } from '@/router/routes/basic';
 import { filter } from '@/utils/helper/treeHelper';
 
 import { getMenuList } from '@/api/sys/menu';
-import { getPermCode } from '@/api/sys/user';
+// import { getPermCode } from '@/api/sys/user';
 
 import { useMessage } from '@/hooks/web/useMessage';
 import { PageEnum } from '@/enums/pageEnum';
+import { getAuthCache, setAuthCache } from '@/utils/auth';
+import { AUTH_KEY } from '@/enums/cacheEnum';
 
 interface PermissionState {
   // Permission code list
   // 权限代码列表
-  permCodeList: string[] | number[];
+  permCodeList: string[];
   // Whether the route has been dynamically added
   // 路由是否动态添加
   isDynamicAddedRoute: boolean;
@@ -60,8 +62,11 @@ export const usePermissionStore = defineStore({
     frontMenuList: [],
   }),
   getters: {
-    getPermCodeList(state): string[] | number[] {
-      return state.permCodeList;
+    // getPermCodeList(state): string[] | number[] {
+    //   return state.permCodeList;
+    // },
+    getPermCodeList(): string[] {
+      return this.permCodeList.length > 0 ? this.permCodeList : getAuthCache<string[]>(AUTH_KEY);
     },
     getBackMenuList(state): Menu[] {
       return state.backMenuList;
@@ -79,6 +84,7 @@ export const usePermissionStore = defineStore({
   actions: {
     setPermCodeList(codeList: string[]) {
       this.permCodeList = codeList;
+      setAuthCache(AUTH_KEY, codeList);
     },
 
     setBackMenuList(list: Menu[]) {
@@ -103,10 +109,10 @@ export const usePermissionStore = defineStore({
       this.backMenuList = [];
       this.lastBuildMenuTime = 0;
     },
-    async changePermissionCode() {
-      const codeList = await getPermCode();
-      this.setPermCodeList(codeList);
-    },
+    // async changePermissionCode() {
+    //   const codeList = await getPermCode();
+    //   this.setPermCodeList(codeList);
+    // },
 
     // 构建路由
     async buildRoutesAction(): Promise<AppRouteRecordRaw[]> {
@@ -182,10 +188,26 @@ export const usePermissionStore = defineStore({
 
         // 路由映射， 默认进入该case
         case PermissionModeEnum.ROUTE_MAPPING:
-          // 对非一级路由进行过滤
-          routes = filter(asyncRoutes, routeFilter);
-          // 对一级路由再次根据角色权限过滤
-          routes = routes.filter(routeFilter);
+          const permissions = this.getPermCodeList;
+
+          const roleRouteFilter = (route: AppRouteRecordRaw) => {
+            const { meta } = route;
+            const { policy } = meta || {};
+            if (!policy) return true;
+            return permissions == undefined || permissions.length <= 0
+              ? true
+              : permissions.includes(policy as string);
+          };
+          console.log(roleRouteFilter);
+          console.log(asyncRoutes);
+          routes = filter(asyncRoutes, roleRouteFilter);
+          routes = routes.filter(roleRouteFilter);
+          routes = routes.filter((e) => e.path.startsWith('/dashboard') || e.children?.length != 0);
+
+          // // 对非一级路由进行过滤
+          // routes = filter(asyncRoutes, routeFilter);
+          // // 对一级路由再次根据角色权限过滤
+          // routes = routes.filter(routeFilter);
           // 将路由转换成菜单
           const menuList = transformRouteToMenu(routes, true);
           // 移除掉 ignoreRoute: true 的路由 非一级路由

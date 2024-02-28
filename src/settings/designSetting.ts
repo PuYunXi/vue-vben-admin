@@ -13,11 +13,11 @@ export const footerHeight = 75;
 // 全屏页头动画时长
 export const layoutMultipleHeadePlaceholderTime = 0.6;
 
-// app theme preset color
+// app theme preset color  app主题色预设
 export const APP_PRESET_COLOR_LIST: string[] = [
+  '#009688',
   '#0960bd',
   '#0084f4',
-  '#009688',
   '#536dfe',
   '#ff5c93',
   '#ee4f12',
@@ -26,7 +26,7 @@ export const APP_PRESET_COLOR_LIST: string[] = [
   '#ff9800',
 ];
 
-// header preset color
+// header preset color 顶部背景色预设
 export const HEADER_PRESET_BG_COLOR_LIST: string[] = [
   '#ffffff',
   '#151515',
@@ -41,7 +41,7 @@ export const HEADER_PRESET_BG_COLOR_LIST: string[] = [
   '#383f45',
 ];
 
-// sider preset color
+// sider preset color 左侧菜单背景色预设
 export const SIDE_BAR_BG_COLOR_LIST: string[] = [
   '#001529',
   '#212121',
