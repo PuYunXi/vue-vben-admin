@@ -6,13 +6,15 @@ import type {
 } from 'ant-design-vue/lib/form/interface';
 import { ref, computed, unref, Ref } from 'vue';
 import { useI18n } from '@/hooks/web/useI18n';
-
+import { useUserStore } from '@/store/modules/user';
+import Oidc from 'oidc-client';
 export enum LoginStateEnum {
   LOGIN,
   REGISTER,
   RESET_PASSWORD,
   MOBILE,
   QR_CODE,
+  TENANT,
 }
 
 const currentState = ref(LoginStateEnum.LOGIN);
@@ -127,4 +129,28 @@ function createRule(message: string): ValidationRule[] {
       trigger: 'change',
     },
   ];
+}
+
+function getOidcSettings() {
+  const { protocol, hostname, port } = window.location;
+  let currentHost = `${protocol}//${hostname}${port ? `:${port}` : ''}`;
+  const settings: any = {
+    authority: import.meta.env.VITE_AUTH_URL,
+    client_id: 'Vue3',
+    redirect_uri: currentHost + '/oidcSignIn',
+    post_logout_redirect_uri: currentHost + '/oidcSignOut',
+    response_type: `id_token token`,
+    scope: 'openid email profile',
+    //silent_redirect_uri: currentHost + '/oidc-silent-renew',
+    automaticSilentRenew: true, // If true oidc-client will try to renew your token when it is about to expire
+    automaticSilentSignin: true, // If true vuex-oidc will try to silently signin unauthenticated users on public routes. Defaults to true
+  };
+  return settings;
+}
+
+export async function useOidcLogout() {
+  const settings = getOidcSettings();
+  const mgr = new Oidc.UserManager(settings);
+  const userStore = useUserStore();
+  await mgr.signoutRedirect({ id_token_hint: userStore.userInfo?.idToken });
 }

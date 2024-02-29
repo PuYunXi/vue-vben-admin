@@ -198,10 +198,23 @@ export const usePermissionStore = defineStore({
               ? true
               : permissions.includes(policy as string);
           };
-          console.log(roleRouteFilter);
-          console.log(asyncRoutes);
+          console.log('0000',roleRouteFilter);
+          console.log('000',asyncRoutes);
           routes = filter(asyncRoutes, roleRouteFilter);
+          console.log('001',routes);
           routes = routes.filter(roleRouteFilter);
+          console.log('002',routes);
+
+          
+          routes =routes.filter(r=>r.children!=undefined);
+          console.log('003',routes);
+
+          // routes =routes.filter(r=>r.path!='');
+          // console.log('003',routes);
+
+          // routes =routes.filter(r=>r.children==null);
+          // console.log('004',routes);
+
           routes = routes.filter((e) => e.path.startsWith('/dashboard') || e.children?.length != 0);
 
           // // 对非一级路由进行过滤
@@ -229,46 +242,46 @@ export const usePermissionStore = defineStore({
 
         //  If you are sure that you do not need to do background dynamic permissions, please comment the entire judgment below
         //  如果确定不需要做后台动态权限，请在下方注释整个判断
-        case PermissionModeEnum.BACK:
-          const { createMessage } = useMessage();
+        // case PermissionModeEnum.BACK:
+        //   const { createMessage } = useMessage();
 
-          createMessage.loading({
-            content: t('sys.app.menuLoading'),
-            duration: 1,
-          });
+        //   createMessage.loading({
+        //     content: t('sys.app.menuLoading'),
+        //     duration: 1,
+        //   });
 
-          // !Simulate to obtain permission codes from the background,
-          // 模拟从后台获取权限码，
-          // this function may only need to be executed once, and the actual project can be put at the right time by itself
-          // 这个功能可能只需要执行一次，实际项目可以自己放在合适的时间
-          let routeList: AppRouteRecordRaw[] = [];
-          try {
-            await this.changePermissionCode();
-            routeList = (await getMenuList()) as AppRouteRecordRaw[];
-          } catch (error) {
-            console.error(error);
-          }
+        //   // !Simulate to obtain permission codes from the background,
+        //   // 模拟从后台获取权限码，
+        //   // this function may only need to be executed once, and the actual project can be put at the right time by itself
+        //   // 这个功能可能只需要执行一次，实际项目可以自己放在合适的时间
+        //   let routeList: AppRouteRecordRaw[] = [];
+        //   try {
+        //  //   await this.changePermissionCode();
+        //     routeList = (await getMenuList()) as AppRouteRecordRaw[];
+        //   } catch (error) {
+        //     console.error(error);
+        //   }
 
-          // Dynamically introduce components
-          // 动态引入组件
-          routeList = transformObjToRoute(routeList);
+        //   // Dynamically introduce components
+        //   // 动态引入组件
+        //   routeList = transformObjToRoute(routeList);
 
-          //  Background routing to menu structure
-          //  后台路由到菜单结构
-          const backMenuList = transformRouteToMenu(routeList);
-          this.setBackMenuList(backMenuList);
+        //   //  Background routing to menu structure
+        //   //  后台路由到菜单结构
+        //   const backMenuList = transformRouteToMenu(routeList);
+        //   this.setBackMenuList(backMenuList);
 
-          // remove meta.ignoreRoute item
-          // 删除 meta.ignoreRoute 项
-          routeList = filter(routeList, routeRemoveIgnoreFilter);
-          routeList = routeList.filter(routeRemoveIgnoreFilter);
+        //   // remove meta.ignoreRoute item
+        //   // 删除 meta.ignoreRoute 项
+        //   routeList = filter(routeList, routeRemoveIgnoreFilter);
+        //   routeList = routeList.filter(routeRemoveIgnoreFilter);
 
-          routeList = flatMultiLevelRoutes(routeList);
-          routes = [PAGE_NOT_FOUND_ROUTE, ...routeList];
-          break;
+        //   routeList = flatMultiLevelRoutes(routeList);
+        //   routes = [PAGE_NOT_FOUND_ROUTE, ...routeList];
+        //   break;
       }
 
-      routes.push(ERROR_LOG_ROUTE);
+      //routes.push(ERROR_LOG_ROUTE);
       patchHomeAffix(routes);
       return routes;
     },

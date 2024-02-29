@@ -65,32 +65,12 @@ export function usePermission() {
     if (!value) {
       return def;
     }
-
-    const permMode = appStore.getProjectConfig.permissionMode;
-
-    if ([PermissionModeEnum.ROUTE_MAPPING, PermissionModeEnum.ROLE].includes(permMode)) {
-      if (!isArray(value)) {
-        return userStore.getRoleList?.includes(value as RoleEnum);
-      }
-      return (intersection(value, userStore.getRoleList) as RoleEnum[]).length > 0;
+    let result = true;
+    if (value) {
+      const allCodeList = permissionStore.getPermCodeList;
+      result = allCodeList == undefined ? false : allCodeList.includes(value as string);
     }
-
-    if (PermissionModeEnum.BACK === permMode) {
-      const allCodeList = permissionStore.getPermCodeList as string[];
-      if (!isArray(value)) {
-        const splits = ['||', '&&'];
-        const splitName = splits.find((item) => value.includes(item));
-        if (splitName) {
-          const splitCodes = value.split(splitName);
-          return splitName === splits[0]
-            ? intersection(splitCodes, allCodeList).length > 0
-            : intersection(splitCodes, allCodeList).length === splitCodes.length;
-        }
-        return allCodeList.includes(value);
-      }
-      return (intersection(value, allCodeList) as string[]).length > 0;
-    }
-    return true;
+    return result
   }
 
   /**

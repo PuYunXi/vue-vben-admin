@@ -24,7 +24,7 @@ import { isArray } from '@/utils/is';
 import { h } from 'vue';
 import { jwtDecode } from 'jwt-decode';
 import { LoginInput } from '@/services/ServiceProxies';
-
+import { useOidcLogout } from '@/views/sys/login/useLogin';
 interface UserState {
   userInfo: Nullable<UserInfo>;
   token?: string;
@@ -161,72 +161,22 @@ export const useUserStore = defineStore({
       }
       permissionStore.setPermCodeList(grantPolicy);
     },
-
-    async afterLoginAction(goHome?: boolean): Promise<GetUserInfoModel | null> {
-      if (!this.getToken) return null;
-      // get user info
-      const userInfo = await this.getUserInfoAction();
-
-      const sessionTimeout = this.sessionTimeout;
-      if (sessionTimeout) {
-        this.setSessionTimeout(false);
-      } else {
-        const permissionStore = usePermissionStore();
-
-        // 动态路由加载（首次）
-        if (!permissionStore.isDynamicAddedRoute) {
-          const routes = await permissionStore.buildRoutesAction();
-          [...routes, PAGE_NOT_FOUND_ROUTE].forEach((route) => {
-            router.addRoute(route as unknown as RouteRecordRaw);
-          });
-          // 记录动态路由加载完成
-          permissionStore.setDynamicAddedRoute(true);
-        }
-
-        goHome && (await router.replace(userInfo?.homePath || PageEnum.BASE_HOME));
-      }
-      return userInfo;
-    },
-
-    async getUserInfoAction(): Promise<UserInfo | null> {
-      if (!this.getToken) return null;
-      const userInfo = await getUserInfo();
-      const { roles = [] } = userInfo;
-      if (isArray(roles)) {
-        const roleList = roles.map((item) => item.value) as RoleEnum[];
-        this.setRoleList(roleList);
-      } else {
-        userInfo.roles = [];
-        this.setRoleList([]);
-      }
-      this.setUserInfo(userInfo);
-      return userInfo;
-    },
+ 
+ 
     /**
      * @description: logout
      */
     async logout(goLogin = false) {
-      if (this.getToken) {
-        try {
-          await doLogout();
-        } catch {
-          console.log('注销Token失败');
+      try {
+        debugger;
+        if (this.userInfo?.isSts) {
+          await useOidcLogout();
+        } else {
+          this.resetState();
+          goLogin && router.push(PageEnum.BASE_LOGIN);
         }
-      }
-      this.setToken(undefined);
-      this.setSessionTimeout(false);
-      this.setUserInfo(null);
-      if (goLogin) {
-        // 直接回登陆页
-        router.replace(PageEnum.BASE_LOGIN);
-      } else {
-        // 回登陆页带上当前路由地址
-        router.replace({
-          path: PageEnum.BASE_LOGIN,
-          query: {
-            redirect: encodeURIComponent(router.currentRoute.value.fullPath),
-          },
-        });
+      } catch (ex) {
+        console.log(ex);
       }
     },
 
