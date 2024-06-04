@@ -1,13 +1,13 @@
-import { type Menu } from '@/router/types';
-import { type AnyFunction } from '@vben/types';
-import { ref, onBeforeMount, unref, Ref, nextTick } from 'vue';
-import { getMenus } from '@/router/menus';
-import { cloneDeep } from 'lodash-es';
-import { filter, forEach } from '@/utils/helper/treeHelper';
-import { useGo } from '@/hooks/web/usePage';
-import { useScrollTo } from '@vben/hooks';
-import { onKeyStroke, useDebounceFn } from '@vueuse/core';
 import { useI18n } from '@/hooks/web/useI18n';
+import { useGo } from '@/hooks/web/usePage';
+import { getMenus } from '@/router/menus';
+import { type Menu } from '@/router/types';
+import { filter, forEach } from '@/utils/helper/treeHelper';
+import { useScrollTo } from '@vben/hooks';
+import { type AnyFunction } from '@vben/types';
+import { onKeyStroke, useDebounceFn } from '@vueuse/core';
+import { cloneDeep } from 'lodash-es';
+import { Ref, nextTick, onBeforeMount, ref, unref } from 'vue';
 
 export interface SearchResult {
   name: string;
@@ -42,21 +42,21 @@ export function useMenuSearch(refs: Ref<HTMLElement[]>, scrollWrap: Ref, emit: A
     const list = await getMenus();
     menuList = cloneDeep(list);
     forEach(menuList, (item) => {
-      item.name = t(item.name);
+      item.name = t(item.meta?.title || item.name);
     });
   });
 
   function search(e: ChangeEvent) {
     e?.stopPropagation();
     const key = e.target.value;
-    keyword.value = key.trim();
+    keyword.value = key.trim().toLowerCase();
     if (!key) {
       searchResult.value = [];
       return;
     }
     const reg = createSearchReg(unref(keyword));
     const filterMenu = filter(menuList, (item) => {
-      return reg.test(item.name) && !item.hideMenu;
+      return reg.test(item.name?.toLowerCase()) && !item.hideMenu;
     });
     searchResult.value = handlerSearchResult(filterMenu, reg);
     activeIndex.value = 0;
@@ -66,7 +66,11 @@ export function useMenuSearch(refs: Ref<HTMLElement[]>, scrollWrap: Ref, emit: A
     const ret: SearchResult[] = [];
     filterMenu.forEach((item) => {
       const { name, path, icon, children, hideMenu, meta } = item;
-      if (!hideMenu && reg.test(name) && (!children?.length || meta?.hideChildrenInMenu)) {
+      if (
+        !hideMenu &&
+        reg.test(name?.toLowerCase()) &&
+        (!children?.length || meta?.hideChildrenInMenu)
+      ) {
         ret.push({
           name: parent?.name ? `${parent.name} > ${name}` : name,
           path,
