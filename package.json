@@ -85,6 +85,8 @@
     "dayjs": "^1.11.10",
     "echarts": "^5.5.0",
     "exceljs": "^4.4.0",
+    "jwt-decode": "^4.0.0",
+    "oidc-client": "^1.11.5",
     "html2canvas": "^1.4.1",
     "lodash-es": "^4.17.21",
     "mockjs": "^1.1.0",
