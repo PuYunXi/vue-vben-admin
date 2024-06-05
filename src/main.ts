@@ -15,12 +15,12 @@ import { initAppConfigStore } from '@/logics/initAppConfig';
 import { router, setupRouter } from '@/router';
 import { setupRouterGuard } from '@/router/guard';
 import { setupStore } from '@/store';
-
+import Antd from 'ant-design-vue';
 import App from './App.vue';
 
 async function bootstrap() {
   const app = createApp(App);
-
+  app.use(Antd);
   // Configure store
   // 配置 store
   setupStore(app);

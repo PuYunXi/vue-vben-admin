@@ -1,12 +1,12 @@
-import { FormSchema } from 'src/components/Table';
-import { BasicColumn } from 'src/components/Table';
-import { useI18n } from 'src/hooks/web/useI18n';
-import { formatToDateTime, dateUtil } from 'src/utils/dateUtil';
+import { FormSchema } from '@/components/Table';
+import { BasicColumn } from '@/components/Table';
+import { useI18n } from '@/hooks/web/useI18n';
+import { formatToDateTime, dateUtil } from '@/utils/dateUtil';
 const { t } = useI18n();
 import {
   IdentitySecurityLogsServiceProxy,
   PageIdentitySecurityLogInput,
-} from 'src/services/ServiceProxies';
+} from '@/services/ServiceProxies';
 
 // 分页表格登录日志 BasicColumn
 export const tableColumns: BasicColumn[] = [

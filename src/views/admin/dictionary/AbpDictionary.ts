@@ -63,6 +63,11 @@ export const dictionaryTypeTableColumns: BasicColumn[] = [
     dataIndex: 'text',
     align: 'left',
   },
+  {
+    title: t('routes.admin.id'),
+    dataIndex: 'id',
+    ifShow:false
+  },
 ];
 //字典项查询
 export const searchFormSchema: FormSchema[] = [

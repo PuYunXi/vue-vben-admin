@@ -45,7 +45,6 @@ const staticMenus: Menu[] = [];
   menuModules.sort((a, b) => {
     return (a.orderNo || 0) - (b.orderNo || 0);
   });
-
   for (const menu of menuModules) {
     staticMenus.push(transformMenuModule(menu));
   }

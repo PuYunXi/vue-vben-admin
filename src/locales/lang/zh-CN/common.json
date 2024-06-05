@@ -8,7 +8,8 @@
   "resetText": "重置",
   "searchText": "搜索",
   "queryText": "查询",
-
+  "editText": "编辑",
+  "createText": "新增",
   "inputText": "请输入",
   "chooseText": "请选择",
 
@@ -16,5 +17,20 @@
   "back": "返回",
 
   "light": "亮色主题",
-  "dark": "黑暗主题"
+  "dark": "黑暗主题",
+ "export": "导出",
+ "action": "操作",
+ "status":"状态",
+ "enabled":"启用",
+"disEnabled":"禁用",
+"true": "是",
+"false": "否",
+"operationSuccess":"操作成功",
+"operationFail":"操作失败",
+"tip":"提示",
+"askDelete":"确认删除吗?",
+"isEnabled": "是否启用",
+"default": "默认",
+"name": "名称",
+"value": "值"
 }

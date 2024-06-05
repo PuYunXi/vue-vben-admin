@@ -17,19 +17,20 @@
           <BasicForm @register="registerUserForm" />
         </TabPane>
         <TabPane :tab="t('routes.admin.userManagement_role')" key="2">
-          <a-checkbox-group v-model:value="defaultRolesRef">
-            <a-row justify="center">
-              <a-col :span="24">
-                <a-checkbox
+          
+          <CheckboxGroup v-model:value="defaultRolesRef">
+            <!-- <a-row justify="center">
+              <a-col :span="24"> -->
+                <Checkbox
                   style="width: 150px"
                   v-for="(item, index) in itemRolesRef"
                   :key="index"
                   :value="item.name"
                 >{{ item.name }}
-                </a-checkbox>
-              </a-col>
-            </a-row>
-          </a-checkbox-group>
+                </Checkbox>
+              <!-- </a-col>
+            </a-row> -->
+          </CheckboxGroup>
         </TabPane>
       </Tabs>
     </div>
@@ -44,19 +45,24 @@ import { BasicForm, useForm } from "@/components/Form/index";
 import { createFormSchema, getAllRoleAsync, createUserAsync } from "@/views/admin/users/AbpUser";
 import { IdentityRoleDto, IdentityUserCreateDto } from "@/services/ServiceProxies";
 import { useI18n } from "@/hooks/web/useI18n";
-
+import { CheckboxGroup,Checkbox } from "ant-design-vue";
 export default defineComponent({
   name: "CreateAbpUser",
   components: {
     BasicModal,
     Tabs,
     TabPane: Tabs.TabPane,
-    BasicForm
+    BasicForm,
+    CheckboxGroup,
+    Checkbox
   },
   emits: ["reload", "register"],
   setup(_, { emit }) {
     const { t } = useI18n();
-    const [registerModal, { changeOkLoading, closeModal }] = useModalInner();
+    const [registerModal, { changeOkLoading, closeModal }] = useModalInner(async()=>{
+console.log(123);
+      await test();
+    });
     const [registerUserForm, { getFieldsValue, validate, resetFields }] = useForm({
       labelWidth: 120,
       schemas: createFormSchema,
@@ -69,6 +75,8 @@ export default defineComponent({
     let defaultRolesRef = ref(defaultRoles);
     let itemRolesRef = ref(itemRoles);
     const visibleChange = async (visible: boolean) => {
+
+      console.log('111',visible);      
       if (visible) {
         itemRolesRef.value.length = 0;
         defaultRolesRef.value.splice(0, defaultRolesRef.value.length);
@@ -82,6 +90,18 @@ export default defineComponent({
         defaultRolesRef.value.length = 0;
       }
     };
+
+    async function test () {
+      itemRolesRef.value.length = 0;
+        defaultRolesRef.value.splice(0, defaultRolesRef.value.length);
+        let roles = await getAllRoleAsync();
+        roles.items?.forEach((e) => {
+          itemRolesRef.value.push(e);
+        });
+
+    }
+
+ 
     // 保存用户
     const submit = async () => {
       try {

@@ -34,7 +34,6 @@ function joinParentPath(menus: Menu[], parentPath = '') {
 // Parsing the menu module
 export function transformMenuModule(menuModule: MenuModule): Menu {
   const menuList = [menuModule];
-
   joinParentPath(menuList);
   return menuList[0];
 }

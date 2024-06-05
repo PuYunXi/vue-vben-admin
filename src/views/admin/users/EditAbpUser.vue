@@ -77,7 +77,11 @@ export default defineComponent({
     );
     const { t } = useI18n();
     let currentUserInfo = new IdentityUserDto();
-    const [registerModal, { changeOkLoading, closeModal }] = useModalInner((data) => {
+    const [registerModal, { changeOkLoading, closeModal }] = useModalInner(async (data) => {
+
+      console.log(123123123)
+      await test();
+
       currentUserInfo = data.record;
       setFieldsValue({
         name: data.record.name,
@@ -107,6 +111,17 @@ export default defineComponent({
         defaultRolesRef.value.splice(0, defaultRolesRef.value.length);
       }
     };
+
+    async function test(){
+      const roles = await getAllRoleAsync();
+        const userRoles = await getRolesByUserIdAsync(currentUserInfo.id as string);
+        userRoles.items?.forEach((e) => {
+          defaultRolesRef.value.push(e.name as string);
+        });
+        roles.items?.forEach((e) => {
+          rolesRef.value.push(e);
+        });
+    }
 
     const submit = async () => {
       try {

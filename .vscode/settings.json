@@ -172,5 +172,8 @@
   "terminal.integrated.scrollback": 10000,
   "nuxt.isNuxtApp": false,
   "vscodeCustomCodeColor.highlightValue": "v-auth",
-  "vscodeCustomCodeColor.highlightValueColor": "#6366f1"
+  "vscodeCustomCodeColor.highlightValueColor": "#6366f1",
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  }
 }

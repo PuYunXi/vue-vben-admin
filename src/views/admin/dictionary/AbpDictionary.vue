@@ -16,21 +16,8 @@
           {{ record.displayText }}
       </template>
      
-    </template>
-
-        <template #toolbar>
-          <a-button
-            v-auth="'AbpIdentity.DataDictionaryManagement.Create'"
-            type="primary"
-            preIcon="ant-design:plus-circle-outlined"
-            @click="handleCreateType"
-          >
-            {{ t("common.createText") }}
-          </a-button
-          >
-        </template>
-        <template #action="{ record }">
-          <TableAction
+      <template v-if="column.key==='action'">
+        <TableAction
             :dropDownActions="[
               {
                 label: t('common.editText'),
@@ -44,7 +31,22 @@
               },
             ]"
           />
+      </template>
+
+    </template>
+
+        <template #toolbar>
+          <a-button
+            v-auth="'AbpIdentity.DataDictionaryManagement.Create'"
+            type="primary"
+            preIcon="ant-design:plus-circle-outlined"
+            @click="handleCreateType"
+          >
+            {{ t("common.createText") }}
+          </a-button
+          >
         </template>
+ 
       </BasicTable>
  
       <BasicTable @register="registerTable" class="w-2/3" size="small">
@@ -59,8 +61,8 @@
           </a-button
           >
         </template>
-
-        <template #action="{ record }">
+        <template #bodyCell="{ column, record }">
+        <template v-if="column.key==='action'">
           <TableAction
             :actions="[
               {
@@ -78,7 +80,9 @@
               },
             ]"
           />
-        </template>
+        </template>        </template>
+
+
       </BasicTable>
       <CreateAbpDictionaryType @register="registerCreateType" @reload="reloadType" />
       <CreateAbpDictionary @register="registerCreateModal" @reload="reload" />
@@ -90,7 +94,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { BasicTable, useTable, TableAction } from "/@/components/Table";
+import { BasicTable, useTable, TableAction } from "@/components/Table";
 import { PageWrapper } from '@/components/Page';
 import { useModal } from "@/components/Modal";
 import CreateAbpDictionary from "./CreateAbpDictionary.vue";
@@ -98,7 +102,7 @@ import EditAbpDictionary from "./EditAbpDictionary.vue";
 import EditAbpDictionaryType from "./EditAbpDictionaryType.vue";
 import CreateAbpDictionaryType from "./CreateAbpDictionaryType.vue";
 
-import { useI18n } from "/@/hooks/web/useI18n";
+import { useI18n } from "@/hooks/web/useI18n";
 import {
   tableColumns,
   searchFormSchema,
@@ -108,8 +112,8 @@ import {
   getDictionaryDetailsAsync,
   deleteDetailAsync,
   deleteDictionaryTypeAsync
-} from "/@/views/admin/dictionary/AbpDictionary";
-import { useMessage } from "/@/hooks/web/useMessage";
+} from "@/views/admin/dictionary/AbpDictionary";
+import { useMessage } from "@/hooks/web/useMessage";
 import { Tag, message } from "ant-design-vue";
 
 export default defineComponent({
@@ -153,7 +157,6 @@ export default defineComponent({
         width: 50,
         title: t("common.action"),
         dataIndex: "action",
-        slots: { customRender: "action" }
       }
     });
 
@@ -220,7 +223,6 @@ export default defineComponent({
         width: 160,
         title: t("common.action"),
         dataIndex: "action",
-        slots: { customRender: "action" }
       }
     });
 
