@@ -24,27 +24,22 @@ export const tableColumns: BasicColumn[] = [
   {
     title: t("routes.admin.userManagement_userName"),
     dataIndex: "userName",
-    width: 240
   },
   {
     title: t("routes.admin.userManagement_name"),
     dataIndex: "name",
-    width: 240
   },
   {
     title: t("routes.admin.userManagement_email"),
     dataIndex: "email",
-    width: 300
   },
   {
     title: t("routes.admin.userManagement_phone"),
     dataIndex: "phoneNumber",
-    width: 300
   },
   {
     title: t("common.status"),
     dataIndex: "isActive",
-    width: 120
   },
   {
     title: t("routes.admin.userManagement_createTime"),

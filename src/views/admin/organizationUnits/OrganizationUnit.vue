@@ -92,10 +92,8 @@
         </a-tabs>
       </div>
     </PageWrapper>
-    <CreateOrganizationUnit
-      @register="registerCreateOrganizationUnit"
-      @reload="initOrganizationUnit"
-    />
+
+    <CreateOrganizationUnit @register="registerCreateOrganizationUnit" @reload="initOrganizationUnit"/>
     <EditOrganizationUnit @register="registerEditOrganizationUnit" @reload="initOrganizationUnit" />
     <AddRoleToOrganizationUnit @register="registerAddRoleToOrganizationUnit" @reload="reloadRole" />
     <AddUserToOrganizationUnit @register="registerAddUserToOrganizationUnit" @reload="reloadUser" />
@@ -170,11 +168,18 @@ export default defineComponent({
       }
     };
     const initOrganizationUnit = async () => {
-      treeData.value = await getTreeAsync();
+      var res =await getTreeAsync();
+      console.log("wewe",res);
+      if (res.length==0){
+        return;
+      }else{
+      treeData.value = res
+    }
     };
     onMounted(async () => {
       await initOrganizationUnit();
     });
+
     // 新增根节点
     function createRootOrganizationUnit() {
       let record = {
@@ -183,11 +188,11 @@ export default defineComponent({
       };
       CreateOrganizationUnitModal(true, { record });
     }
-    function getRightMenuList(node: any): ContextMenuItem[] {
+    function getRightMenuList(node: any): Promise<ContextMenuItem[]> {
       let create = hasPermission('AbpIdentity.OrganizationUnitManagement.Create');
       let update = hasPermission('AbpIdentity.OrganizationUnitManagement.Update');
       let deleted = hasPermission('AbpIdentity.OrganizationUnitManagement.Delete');
-      return [
+      return new Promise(()=>{[
         {
           label: t("common.createText"),
           hidden: !create,
@@ -229,12 +234,13 @@ export default defineComponent({
           },
           icon: "ant-design:delete-outlined",
         }
-      ];
+      ]});
     }
     async function handleSelect(keys) {
       if (keys.length > 0) {
         organizationUnitId = keys[0];
         if (activeKey.value == "1") {
+          console.log(666)
           await reloadUser();
         } else {
           await reloadRole();
@@ -244,7 +250,9 @@ export default defineComponent({
       }
     }
     const getUserAsync = async () => {
+
       if (organizationUnitId) {
+
         let request = new GetOrganizationUnitUserInput();
         request.filter = getUserForm().getFieldsValue().filter;
         request.organizationUnitId = organizationUnitId;
@@ -289,13 +297,14 @@ export default defineComponent({
         width: 80,
         title: t("common.action"),
         dataIndex: "action",
-        //fixed: "right"
       }
     });
-    const activeKeyChange = async (activeKey) => {
+    const activeKeyChange = async (activeKey: number) => {
       if (organizationUnitId) {
         if (activeKey == 1) {
+          console.log(6669)
           await reloadUser();
+          console.log(8889)
         } else {
           await reloadRole();
         }
@@ -359,14 +368,6 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-/*.ant-tabs-tabpane {*/
-/*  background: #F0F2F5;*/
-/*}*/
-
-
-/* .ant-table-cell.ant-table-cell-fix-right.ant-table-cell-fix-right-first {
-    right: 0 !important;
-} */
 </style>
 
  

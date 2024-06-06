@@ -59,7 +59,8 @@ const setting: ProjectConfig = {
   // Header configuration
   headerSetting: {
     // header bg color
-    bgColor: HEADER_PRESET_BG_COLOR_LIST[0],
+    // bgColor: HEADER_PRESET_BG_COLOR_LIST[0],
+    bgColor: '#fff',
     // Fixed at the top
     fixed: true,
     // Whether to show top

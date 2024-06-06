@@ -15,7 +15,6 @@ export const layoutMultipleHeadePlaceholderTime = 0.6;
 
 // app theme preset color  app主题色预设
 export const APP_PRESET_COLOR_LIST: string[] = [
-  '#009688',
   '#0960bd',
   '#0084f4',
   '#536dfe',
@@ -24,6 +23,7 @@ export const APP_PRESET_COLOR_LIST: string[] = [
   '#0096c7',
   '#9c27b0',
   '#ff9800',
+  '#009688',
 ];
 
 // header preset color 顶部背景色预设
@@ -54,4 +54,5 @@ export const SIDE_BAR_BG_COLOR_LIST: string[] = [
   '#28333E',
   '#344058',
   '#383f45',
+  '#009688',
 ];

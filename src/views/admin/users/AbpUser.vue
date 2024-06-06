@@ -40,7 +40,8 @@
         label: t('common.delText'),
         onClick: handleDelete.bind(null, record),
       },
-    ]" :dropDownActions="[
+    ]"
+     :dropDownActions="[
     {
         icon: 'fluent:password-reset-48-regular',
         color: 'warning',
@@ -109,7 +110,7 @@ export default defineComponent({
       canResize: true,
       showIndexColumn: true,
       actionColumn: {
-        width: 240,
+        width: 280,
         title: t("common.action"),
         dataIndex: "action",
         // fixed: "right"
@@ -190,7 +191,5 @@ export default defineComponent({
 });
 </script>
 <style>
-.ant-table-cell.ant-table-cell-fix-right.ant-table-cell-fix-right-first {
-  right: 0 !important;
-}
+
 </style>
