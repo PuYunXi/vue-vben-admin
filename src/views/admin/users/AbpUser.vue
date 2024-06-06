@@ -2,7 +2,7 @@
   <div>
     <BasicTable @register="registerTable" size="small">
       <template #toolbar>
-        <a-button preIcon="ant-design:plus-circle-outlined" type="primary" @click="openCreateAbpUserModal"
+        <a-button preIcon="ant-design:plus-circle-outlined" type="primary" @click="handleCreate"
           v-auth="'AbpIdentity.Users.Create'">
           {{ t("common.createText") }}
         </a-button>
@@ -20,36 +20,35 @@
 
         <template v-if="column.key === 'action'">
           <TableAction :actions="[
+            {
+              icon: 'fluent-mdl2:switch-user',
+              color: 'success',
+              auth: 'AbpIdentity.Users.Enable',
+              label: !record.isActive ? t('common.enabled') : t('common.disEnabled'),
+              onClick: handleLock.bind(null, record),
+            },
+            {
+              icon: 'ant-design:edit-outlined',
+              auth: 'AbpIdentity.Users.Update',
+              label: t('common.editText'),
+              onClick: handleEdit.bind(null, record),
+            },
+            {
+              icon: 'ant-design:delete-outlined',
+              color: 'error',
+              auth: 'AbpIdentity.Users.Delete',
+              label: t('common.delText'),
+              onClick: handleDelete.bind(null, record),
+            },
+          ]" :dropDownActions="[
       {
-        icon: 'fluent-mdl2:switch-user',
-        color: 'success',
-        auth: 'AbpIdentity.Users.Enable',
-        label: !record.isActive ? t('common.enabled') : t('common.disEnabled'),
-        onClick: handleLock.bind(null, record),
-      },
-      {
-        icon: 'ant-design:edit-outlined',
-        auth: 'AbpIdentity.Users.Update',
-        label: t('common.editText'),
-        onClick: handleEdit.bind(null, record),
-      },
-      {
-        icon: 'ant-design:delete-outlined',
-        color: 'error',
-        auth: 'AbpIdentity.Users.Delete',
-        label: t('common.delText'),
-        onClick: handleDelete.bind(null, record),
-      },
-    ]"
-     :dropDownActions="[
-    {
         icon: 'fluent:password-reset-48-regular',
         color: 'warning',
         auth: 'AbpIdentity.Users.Update',
         label: t('common.resetPassword'),
         onClick: handleReset.bind(null, record),
       },
- 
+
     ]" />
         </template>
 
@@ -124,6 +123,13 @@ export default defineComponent({
       });
     };
 
+    //创建用户
+    const handleCreate =  ( ) => {
+      openCreateAbpUserModal(true,{
+
+      })
+    };
+
     // 删除用户
     const handleDelete = async (record: Recordable) => {
       if (record.name == "admin") {
@@ -142,22 +148,22 @@ export default defineComponent({
       }
     };
 
-        // 重置密码
-  const handleReset = async (record: Recordable) => {
- 
-        let msg = "将密码重置为初始密码?";
-        createConfirm({
-          iconType: "warning",
-          title: t("common.tip"),
-          content: msg,
-          onOk: async () => {
-            let param = new IdInput();
-            param.id= record.id
-            await resetUserAsync(param);
-            message.success("重置成功");
-          }
-        });
- 
+    // 重置密码
+    const handleReset = async (record: Recordable) => {
+
+      let msg = "将密码重置为初始密码?";
+      createConfirm({
+        iconType: "warning",
+        title: t("common.tip"),
+        content: msg,
+        onOk: async () => {
+          let param = new IdInput();
+          param.id = record.id
+          await resetUserAsync(param);
+          message.success("重置成功");
+        }
+      });
+
     };
 
     const handleLock = async (record: Recordable) => {
@@ -175,6 +181,7 @@ export default defineComponent({
     };
     return {
       registerTable,
+      handleCreate,
       handleEdit,
       handleDelete,
       getTableListAsync,
@@ -190,6 +197,4 @@ export default defineComponent({
   }
 });
 </script>
-<style>
-
-</style>
+<style></style>

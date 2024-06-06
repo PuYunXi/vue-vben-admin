@@ -17,21 +17,21 @@
           <BasicForm @register="registerUserForm" />
         </TabPane>
         <TabPane :tab="t('routes.admin.userManagement_role')" key="2">
-          <a-checkbox-group v-model:value="defaultRolesRef">
+          <CheckboxGroup v-model:value="defaultRolesRef">
             <a-row justify="center">
               <a-col :span="24">
-                <a-checkbox
+                <Checkbox
                   style="width: 150px"
                   v-for="(item, index) in rolesRef"
                   :key="index"
                   :value="item.name"
                 >
                   {{ item.name }}
-                </a-checkbox
+                </Checkbox
                 >
               </a-col>
             </a-row>
-          </a-checkbox-group>
+          </CheckboxGroup>
         </TabPane>
       </Tabs>
     </div>
@@ -42,7 +42,7 @@
 import { defineComponent, ref } from "vue";
 import { BasicModal, useModalInner } from "@/components/Modal";
 import { BasicForm, useForm } from "@/components/Form/index";
-import { Tabs } from "ant-design-vue";
+import { Tabs,CheckboxGroup, Checkbox } from "ant-design-vue";
 import {
   editFormSchema,
   getAllRoleAsync,
@@ -64,7 +64,9 @@ export default defineComponent({
     BasicModal,
     BasicForm,
     Tabs,
-    TabPane: Tabs.TabPane
+    TabPane: Tabs.TabPane,
+    CheckboxGroup,
+    Checkbox
   },
   emits: ["reload", "register"],
   setup(_, { emit }) {
@@ -79,8 +81,18 @@ export default defineComponent({
     let currentUserInfo = new IdentityUserDto();
     const [registerModal, { changeOkLoading, closeModal }] = useModalInner(async (data) => {
 
-      console.log(123123123)
-      await test();
+        const roles = await getAllRoleAsync();
+        const userRoles = await getRolesByUserIdAsync(currentUserInfo.id as string);
+
+        console.log(userRoles);
+        console.log(roles);
+
+        userRoles.items?.forEach((e) => {
+          defaultRolesRef.value.push(e.name as string);
+        });
+        roles.items?.forEach((e) => {
+          rolesRef.value.push(e);
+        });
 
       currentUserInfo = data.record;
       setFieldsValue({
@@ -111,17 +123,6 @@ export default defineComponent({
         defaultRolesRef.value.splice(0, defaultRolesRef.value.length);
       }
     };
-
-    async function test(){
-      const roles = await getAllRoleAsync();
-        const userRoles = await getRolesByUserIdAsync(currentUserInfo.id as string);
-        userRoles.items?.forEach((e) => {
-          defaultRolesRef.value.push(e.name as string);
-        });
-        roles.items?.forEach((e) => {
-          rolesRef.value.push(e);
-        });
-    }
 
     const submit = async () => {
       try {
@@ -158,8 +159,11 @@ export default defineComponent({
       }
     };
     const cancel = () => {
+      rolesRef.value.splice(0, rolesRef.value.length);
+      defaultRolesRef.value.splice(0, defaultRolesRef.value.length);
       resetFields();
       closeModal();
+
     };
 
     return {

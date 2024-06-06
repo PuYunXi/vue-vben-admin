@@ -169,12 +169,7 @@ export default defineComponent({
     };
     const initOrganizationUnit = async () => {
       var res =await getTreeAsync();
-      console.log("wewe",res);
-      if (res.length==0){
-        return;
-      }else{
       treeData.value = res
-    }
     };
     onMounted(async () => {
       await initOrganizationUnit();
@@ -188,11 +183,11 @@ export default defineComponent({
       };
       CreateOrganizationUnitModal(true, { record });
     }
-    function getRightMenuList(node: any): Promise<ContextMenuItem[]> {
+    function getRightMenuList(node: any): ContextMenuItem[] {
       let create = hasPermission('AbpIdentity.OrganizationUnitManagement.Create');
       let update = hasPermission('AbpIdentity.OrganizationUnitManagement.Update');
       let deleted = hasPermission('AbpIdentity.OrganizationUnitManagement.Delete');
-      return new Promise(()=>{[
+      return [
         {
           label: t("common.createText"),
           hidden: !create,
@@ -234,7 +229,7 @@ export default defineComponent({
           },
           icon: "ant-design:delete-outlined",
         }
-      ]});
+      ];
     }
     async function handleSelect(keys) {
       if (keys.length > 0) {
