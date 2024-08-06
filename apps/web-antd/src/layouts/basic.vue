@@ -144,7 +144,7 @@ function handleMakeAll() {
         :loading="loginLoading"
         password-placeholder="123456"
         username-placeholder="vben"
-        @submit="authStore.authLogin"
+        @submit="authStore.abpLogin"
       />
     </template>
     <template #lock-screen>

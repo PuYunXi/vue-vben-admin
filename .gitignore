@@ -48,3 +48,11 @@ vite.config.ts.*
 *.njsproj
 *.sln
 *.sw?
+.vs/vue-vben-admin/FileContentIndex/0d445072-e7d8-4f72-9348-df3f7a8b6333.vsidx
+.vs/slnx.sqlite
+.vs/VSWorkspaceState.json
+.vs/vue-vben-admin/FileContentIndex/19d48ba3-abb4-4c4d-a993-cb9394794fd2.vsidx
+.vs/vue-vben-admin/FileContentIndex/cd3398b5-8d43-4ced-9a0b-b932aff05b0f.vsidx
+.vs/vue-vben-admin/v17/.wsuo
+.vs/vue-vben-admin/v17/DocumentLayout.json
+.vs/vue-vben-admin/v17/workspaceFileList.bin

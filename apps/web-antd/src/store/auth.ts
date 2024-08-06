@@ -13,6 +13,14 @@ import { defineStore } from 'pinia';
 import { getAccessCodes, getUserInfo, login } from '#/api';
 import { $t } from '#/locales';
 
+import {
+  AccountServiceProxy,
+  LoginOutput,
+  LoginInput,
+  AbpApplicationConfigurationServiceProxy,
+} from '../services/ServiceProxies';
+
+
 export const useAuthStore = defineStore('auth', () => {
   const accessStore = useAccessStore();
   const userStore = useUserStore();
@@ -29,6 +37,9 @@ export const useAuthStore = defineStore('auth', () => {
     params: LoginAndRegisterParams,
     onSuccess?: () => Promise<void> | void,
   ) {
+
+    console.log("authLogin");
+
     // 异步处理用户登录操作并获取 accessToken
     let userInfo: null | UserInfo = null;
     try {
@@ -77,6 +88,24 @@ export const useAuthStore = defineStore('auth', () => {
     };
   }
 
+async function abpLogin (params: LoginAndRegisterParams,  onSuccess?: () => Promise<void> | void)
+  {
+    console.log("abpLogin");
+  const _loginServiceProxy = new AccountServiceProxy();
+  const input = new LoginInput();
+  input.name = params.username;
+  input.password = params.password;
+  let res =await  _loginServiceProxy.login(input);
+  console.log("12312",input);
+  console.log(res);
+
+  onSuccess
+  ? await onSuccess?.()
+  : await router.push( DEFAULT_HOME_PATH);
+}
+
+
+
   async function logout() {
     resetAllStores();
     accessStore.setLoginExpired(false);
@@ -107,5 +136,6 @@ export const useAuthStore = defineStore('auth', () => {
     fetchUserInfo,
     loginLoading,
     logout,
+    abpLogin
   };
 });

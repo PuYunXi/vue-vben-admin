@@ -25,6 +25,7 @@
   },
   "type": "module",
   "scripts": {
+    "nswag": "cd nswag &.\\refresh.bat",
     "bootstrap": "pnpm install",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 turbo build",
     "build:analyze": "turbo build:analyze",
@@ -107,5 +108,8 @@
       "node-gyp",
       "playwright"
     ]
+  },
+  "dependencies": {
+    "nswag": "^14.1.0"
   }
 }
