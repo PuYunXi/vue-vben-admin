@@ -32,6 +32,8 @@ interface AccessState {
    * 用户角色
    */
   userRoles: string[];
+
+  token:string;
 }
 
 /**
@@ -53,6 +55,7 @@ export const useUserStore = defineStore('core-user', {
   state: (): AccessState => ({
     userInfo: null,
     userRoles: [],
+    token:''
   }),
 });
 

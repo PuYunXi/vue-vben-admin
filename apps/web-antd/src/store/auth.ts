@@ -10,7 +10,7 @@ import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
 import { notification } from 'ant-design-vue';
 import { defineStore } from 'pinia';
 
-import { getAccessCodes, getUserInfo, login } from '#/api';
+import { getAccessCodes, getUserInfo, login, loginAbp } from '#/api';
 import { $t } from '#/locales';
 
 import {
@@ -87,25 +87,45 @@ export const useAuthStore = defineStore('auth', () => {
       userInfo,
     };
   }
+ 
+  async function abpLogin(params: LoginAndRegisterParams, onSuccess?: () => Promise<void> | void) {
+    try {
+      loginLoading.value = true;
+      console.log("abpLogin");
+      const input = new LoginInput();
+      input.name = params.username;
+      input.password = params.password;
+      let loginRes = await loginAbp(input);
+      console.log("loginRes:", loginRes);
+      const userInfo: null | UserInfo = {
+        userId: loginRes.id as string,
+        username: loginRes.userName as string,
+        realName: loginRes.name as string,
+        homePath: DEFAULT_HOME_PATH,
+        roles: loginRes.roles,
+        desc: '',
+        avatar: '',
+        token: loginRes.token as string,
+      };
 
-async function abpLogin (params: LoginAndRegisterParams,  onSuccess?: () => Promise<void> | void)
-  {
-    console.log("abpLogin");
-  const _loginServiceProxy = new AccountServiceProxy();
-  const input = new LoginInput();
-  input.name = params.username;
-  input.password = params.password;
-  let res =await  _loginServiceProxy.login(input);
-  console.log("12312",input);
-  console.log(res);
+      userStore.setUserInfo(userInfo);
 
-  onSuccess
-  ? await onSuccess?.()
-  : await router.push( DEFAULT_HOME_PATH);
-}
+      onSuccess
+        ? await onSuccess?.()
+        : await router.push(DEFAULT_HOME_PATH);
+      if (userInfo?.realName) {
+        notification.success({
+          description: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realName}`,
+          duration: 3,
+          message: $t('authentication.loginSuccess'),
+        });
+      }
 
-
-
+    } finally {
+      loginLoading.value = false;
+    }
+  }
+ 
   async function logout() {
     resetAllStores();
     accessStore.setLoginExpired(false);

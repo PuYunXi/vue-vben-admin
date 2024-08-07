@@ -189,5 +189,8 @@
   },
   "commentTranslate.hover.enabled": false,
   "i18n-ally.keystyle": "nested",
-  "commentTranslate.multiLineMerge": true
+  "commentTranslate.multiLineMerge": true,
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  }
 }

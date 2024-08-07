@@ -13,6 +13,6 @@ const authStore = useAuthStore();
     :loading="authStore.loginLoading"
     password-placeholder="123456"
     username-placeholder="vben"
-    @submit="authStore.abpLogin"
+    @submit="authStore.authLogin"
   />
 </template>
