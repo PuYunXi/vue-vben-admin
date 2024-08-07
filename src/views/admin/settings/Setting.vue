@@ -1,5 +1,4 @@
 <template>
-  <!-- <PageWrapper v-loading="loading"> -->
     <div ref="wrapperRef" :class="prefixCls">
       <Tabs tab-position="left" :tabBarStyle="tabBarStyle">
         <template v-for="item in settingList" :key="item.group">
@@ -15,7 +14,7 @@
                   </div>
                   <div v-if="setting.type === 'CheckBox'">
                     <a-checkbox
-                      :checked="!(setting.value == 'false' || setting.value == false)"
+                      :checked="!(setting.value == 'false')"
                       @update:checked="(val) => (setting.value = val)"
                     >
                       {{ setting.description }}
